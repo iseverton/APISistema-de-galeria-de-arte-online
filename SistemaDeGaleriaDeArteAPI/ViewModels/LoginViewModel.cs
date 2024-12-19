@@ -7,7 +7,7 @@ namespace SistemaDeGaleriaDeArteAPI.ViewModels
         [Required(ErrorMessage = "o campo email é obrigatorio")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "o campo email é obrigatorio")]
+        [Required(ErrorMessage = "o campo password é obrigatorio")]
         public string Password { get; set; }
     }
 }

@@ -55,6 +55,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// organiza isso depois,criar ( Void )
 app.UseAuthentication();
 app.UseAuthorization();
 

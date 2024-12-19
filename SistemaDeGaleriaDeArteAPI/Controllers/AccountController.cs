@@ -25,12 +25,21 @@ public class AccountController : Controller
     public async Task<IActionResult> Register(RegisterViewModel model) 
     {
 
+
+        // Verificar se email ou telefone ja existem
         var email = await _context.Users.FirstOrDefaultAsync(x => x.UserEmail == model.Email);
+        var phone = await _context.Users.FirstOrDefaultAsync(p=> p.PhoneNumber == model.Phone);
 
         if (email != null) {
-            return BadRequest("Esse email ja existe,faca o login");
+            return BadRequest("Esse email ja existe,faca o login!");
         }
 
+        if(phone != null)
+        {
+            return BadRequest("esse telefone ja esta sendo usado!");
+        }
+
+        // Restrigir acesso aos roles para usuario comum
         if (model.Role.ToString().ToLower() != "user" && model.Role.ToString().ToLower() != "artista")
         {
             return BadRequest("O (role) deve ser 'user' ou 'artista'.");
@@ -67,12 +76,13 @@ public class AccountController : Controller
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginViewModel model) 
     {
+        // Confirmar email e senha
         var email = await _context.Users.FirstOrDefaultAsync(e=> e.UserEmail == model.Email);
         var senha = await _context.Users.FirstOrDefaultAsync(s => s.Password == model.Password);
 
         if(email == null || senha == null)
         {
-            return BadRequest("Email o senha errados");
+            return BadRequest("Email ou senha errados");
         }
 
         try

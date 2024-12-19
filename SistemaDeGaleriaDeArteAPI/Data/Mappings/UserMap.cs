@@ -30,6 +30,9 @@ namespace SistemaDeGaleriaDeArteAPI.Data.Mappings
                 .HasMaxLength(180)
                 .IsRequired();
 
+            builder.HasIndex(u => u.UserEmail)
+                     .IsUnique();
+
             builder.Property(u => u.Password)
                 .HasColumnName("password")
                 .HasColumnType("varchar")
@@ -47,6 +50,9 @@ namespace SistemaDeGaleriaDeArteAPI.Data.Mappings
                    .HasColumnType("varchar")
                    .HasMaxLength(11)
                    .IsRequired(false);
+
+            builder.HasIndex(u => u.PhoneNumber)
+                      .IsUnique();
 
             builder.Property(u => u.CreatedAt)
                    .HasColumnName("createdAt")

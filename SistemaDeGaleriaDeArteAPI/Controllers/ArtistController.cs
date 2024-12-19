@@ -60,7 +60,7 @@ public class ArtistController : Controller
     }
 
     [HttpPost("criarwork")]
-    [Authorize(Roles = "admin,moderador,artista")]
+    [Authorize(Roles = "admin,moderator,artist")]
     public async Task<IActionResult> createWork(WorkViewModel model) 
     { 
         if(model is null)
@@ -96,7 +96,7 @@ public class ArtistController : Controller
     }
 
     [HttpPut("editar/{id:int}")]
-    [Authorize(Roles = "admin,moderador,artista")]
+    [Authorize(Roles = "admin,moderator,artist")]
     public async Task<IActionResult> EditWork(EditarWorkViewModel EditWork,int id) 
     {
 
@@ -142,7 +142,7 @@ public class ArtistController : Controller
 
 
     [HttpDelete("deletar/{id}")]
-    [Authorize(Roles = "admin,moderador,artista")]
+    [Authorize(Roles = "admin,moderator,artist")]
     public async Task<IActionResult> DeleteWok(int id)
     {
         var userIdClaim = int.Parse(User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)?.Value);

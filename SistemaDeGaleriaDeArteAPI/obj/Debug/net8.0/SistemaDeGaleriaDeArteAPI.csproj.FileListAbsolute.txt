@@ -111,3 +111,4 @@ C:\Users\evert\source\repos\SistemaDeGaleriaDeArteAPI\SistemaDeGaleriaDeArteAPI\
 C:\Users\evert\source\repos\SistemaDeGaleriaDeArteAPI\SistemaDeGaleriaDeArteAPI\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\evert\source\repos\SistemaDeGaleriaDeArteAPI\SistemaDeGaleriaDeArteAPI\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
 C:\Users\evert\source\repos\SistemaDeGaleriaDeArteAPI\SistemaDeGaleriaDeArteAPI\bin\Debug\net8.0\System.Security.Permissions.dll
+C:\Users\evert\source\repos\SistemaDeGaleriaDeArteAPI\SistemaDeGaleriaDeArteAPI\obj\Debug\net8.0\SistemaDeGaleriaDeArteAPI.sourcelink.json
