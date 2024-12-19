@@ -45,4 +45,6 @@ O sistema será uma **plataforma de divulgação** para artistas, onde eles pode
 - **ASP.NET Core**: Framework de desenvolvimento para construção da API.
 - **Entity Framework Core**: ORM (Object-Relational Mapping) utilizado para facilitar a interação entre o sistema e o banco de dados MySQL.
 - **MySQL**: Banco de dados relacional utilizado para armazenar os dados do sistema de maneira estruturada e eficiente.
+- **Fluent Mapping**: Utilizado para configurar as entidades no código, permitindo personalizar o mapeamento de objetos para tabelas de banco de dados de maneira mais flexível.
+- **Data Annotations**:  Configurar o comportamento das propriedades da entidade, como validações e restrições de dados.  
 - **JWT (JSON Web Token)**: Utilizado para autenticação e autorização, garantindo a segurança das interações entre o cliente e a API.
