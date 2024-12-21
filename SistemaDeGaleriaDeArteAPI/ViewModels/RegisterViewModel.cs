@@ -16,7 +16,6 @@ public class RegisterViewModel
     public string Email { get; set; } = string.Empty;
 
 
-    [Required(ErrorMessage = "O campo de email  deve ser preenchido")]
     [StringLength(11, MinimumLength = 11, ErrorMessage = "o campo email deve ter 11 caracteres")]
     //[RegularExpression(@"^\(\d{2}\) \d{5}-\d{4}$", ErrorMessage = "O número de telefone deve estar no formato (XX) XXXXX-XXXX.")]
     public string Phone { get; set; } = string.Empty;

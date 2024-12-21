@@ -3,7 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 using SistemaDeGaleriaDeArteAPI.Data;
+using SistemaDeGaleriaDeArteAPI.Interfaces;
+using SistemaDeGaleriaDeArteAPI.Models;
 using SistemaDeGaleriaDeArteAPI.Services;
+using SistemaDeGaleriaDeArteAPI.ViewModels;
 using System.Security.Claims;
 
 namespace SistemaDeGaleriaDeArteAPI.Controllers;
@@ -13,31 +16,27 @@ namespace SistemaDeGaleriaDeArteAPI.Controllers;
 public class ModeratorController : Controller
 {
     private readonly AppDbContext _context;
-    private readonly TokenService _tokenService;
+    private readonly IModeratorRepository _moderatorRepository;
+    
 
-    public ModeratorController(AppDbContext context, TokenService tokenService)
+    public ModeratorController(AppDbContext context, IModeratorRepository moderatorRepository )
     {
         _context = context;
-        _tokenService = tokenService;
+        _moderatorRepository = moderatorRepository;
     }
 
     // Deletar obra
     [HttpDelete("deletar/work/{id:int}")]
-    [Authorize(Roles = "admin,moderador")]
+    [Authorize(Roles = "admin,moderator")]
     public async Task<IActionResult> DeleteWork(int id)
     {
-        
-        var work = await _context.Works.FirstOrDefaultAsync(w => w.WorkId == id);
-        if (work == null)
-        {
-            return BadRequest("obra nao encontrada");
-        }
-
         try
         {
-            _context.Works.Remove(work);
-            await _context.SaveChangesAsync();
-
+            var work = await _moderatorRepository.DeletarWorkAsync(id);
+            if (work == null)
+            {
+                return BadRequest("obra nao encontrada");
+            }
             return Ok("Work apagado!");
         }
         catch (MySqlException Bd)
@@ -52,21 +51,16 @@ public class ModeratorController : Controller
 
     // Deletar user
     [HttpDelete("deletar/user/{id:int}")]
-    [Authorize(Roles = "admin,moderador")]
+    [Authorize(Roles = "admin,moderator")]
     public async Task<IActionResult> DeleteUser(int id)
     {
-
-        var user = await _context.Users.FirstOrDefaultAsync(u=> u.UserID == id);
-        if (user == null)
-        {
-            return BadRequest("user nao encontrada");
-        }
-
         try
         {
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
+            var user = await _moderatorRepository.DeletarUserAsync(id);
+            if (user == null)
+            {
+                return BadRequest("user nao encontrada");
+            }
             return Ok("user excluido!");
         }
         catch (MySqlException Bd)
@@ -78,7 +72,4 @@ public class ModeratorController : Controller
             return BadRequest($"Falha interna! {ex.Message}");
         }
     }
-
-
-
 }

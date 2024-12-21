@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SistemaDeGaleriaDeArteAPI.Configuration;
 using SistemaDeGaleriaDeArteAPI.Data;
+using SistemaDeGaleriaDeArteAPI.Interfaces;
+using SistemaDeGaleriaDeArteAPI.Repositories;
 using SistemaDeGaleriaDeArteAPI.Services;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -26,6 +28,12 @@ builder.Services.AddAuthentication(x =>
 
 });
 // Add services to the container.
+builder.Services.AddScoped<IWorkRepository,WorkRepository>();
+builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
+builder.Services.AddScoped<IUserRepository,UserRepository>();
+builder.Services.AddScoped<IModeratorRepository,ModeratorRepository>();
+builder.Services.AddTransient<TokenService>();
+
 
 builder.Services.AddControllers();
 
@@ -34,7 +42,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(stringConneciton,ServerVersion.AutoDetect(stringConneciton))
 );
 
-builder.Services.AddTransient<TokenService>();
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

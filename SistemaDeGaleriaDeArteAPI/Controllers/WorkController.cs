@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 using SistemaDeGaleriaDeArteAPI.Data;
+using SistemaDeGaleriaDeArteAPI.Interfaces;
 using SistemaDeGaleriaDeArteAPI.Models;
 using SistemaDeGaleriaDeArteAPI.Services;
 using SistemaDeGaleriaDeArteAPI.ViewModels;
@@ -13,22 +14,24 @@ namespace SistemaDeGaleriaDeArteAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ArtistController : Controller
+public class WorkController : Controller
 {
     private readonly AppDbContext _context;
     private readonly TokenService _tokenService;
+    private readonly IWorkRepository _WorkRepository;
 
-    public ArtistController(AppDbContext context, TokenService tokenService)
+    public WorkController(AppDbContext context, TokenService tokenService, IWorkRepository workRepository)
     {
         _context = context;
         _tokenService = tokenService;
+        _WorkRepository = workRepository;
     }
 
-    [HttpGet("obras")]
-    public async Task<ActionResult<List<WorkModel>>> Get() {
+    [HttpGet]
+    public async Task<ActionResult<List<WorkModel>>> GetWorkAll() {
         try
         {
-            var works = await _context.Works.ToListAsync();
+            var works = await _WorkRepository.GetAsync();
             if (works is null)
             {
                 NotFound("nenhuma obra foi encontrada");
@@ -41,17 +44,17 @@ public class ArtistController : Controller
         }
     }
 
-    [HttpGet("obras/{id}")]
+    [HttpGet("{id:int}")]
     public async Task<ActionResult<List<WorkModel>>> GetWorkById(int id)
     {
         try
         {
-            var works = await _context.Works.FirstOrDefaultAsync(w => w.WorkId == id);
-            if (works is null)
+            var work = await _WorkRepository.GetByIdAsync(id);
+            if (work is null)
             {
                 NotFound("nenhuma obra foi encontrada");
             }
-            return Ok(works);
+            return Ok(work);
         }
         catch (Exception ex)
         {
@@ -59,7 +62,7 @@ public class ArtistController : Controller
         }
     }
 
-    [HttpPost("criarwork")]
+    [HttpPost]
     [Authorize(Roles = "admin,moderator,artist")]
     public async Task<IActionResult> createWork(WorkViewModel model) 
     { 
@@ -70,20 +73,8 @@ public class ArtistController : Controller
 
         try
         {
-            var work = new WorkModel(
-                 model.NameWork,
-                 model.Description,
-                 model.ImageUrl,
-                 DateTime.UtcNow,
-                 DateTime.UtcNow,
-                 model.IsAvailable,
-                 model.CategoryId,
-                 model.ArtistId
-                );
-
-            await _context.Works.AddAsync(work);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(Get), new { id = work.WorkId }, work);
+           var work = await _WorkRepository.PostAsync(model);
+            return CreatedAtAction(nameof(GetWorkById), new { id = work.WorkId }, work);
         }
         catch (MySqlException Bd)
         {
@@ -95,7 +86,7 @@ public class ArtistController : Controller
         }
     }
 
-    [HttpPut("editar/{id:int}")]
+    [HttpPut("{id:int}")]
     [Authorize(Roles = "admin,moderator,artist")]
     public async Task<IActionResult> EditWork(EditarWorkViewModel EditWork,int id) 
     {
@@ -116,19 +107,18 @@ public class ArtistController : Controller
             return Unauthorized("Você não tem permissão para editar essa obra.");
         }
 
-
+        // 
 
         try
-        {
+        {   
             work.NameWork = EditWork.NameWork;
             work.Description = EditWork.Description;
             work.ImageUrl = EditWork.ImageUrl;
             work.IsAvailable = EditWork.IsAvailable;
             work.LastUpdateDate = DateTime.UtcNow;
 
-
-            await _context.SaveChangesAsync();
-            return Ok(EditWork);
+            await _WorkRepository.PutAsync(work);
+            return Ok(work);
         }
         catch (MySqlException Bd)
         {
@@ -141,13 +131,16 @@ public class ArtistController : Controller
     }
 
 
-    [HttpDelete("deletar/{id}")]
+    [HttpDelete("{id:int}")]
     [Authorize(Roles = "admin,moderator,artist")]
-    public async Task<IActionResult> DeleteWok(int id)
+    public async Task<IActionResult> DeleteWork(int id)
     {
         var userIdClaim = int.Parse(User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)?.Value);
 
-        var work = await _context.Works.FirstOrDefaultAsync(w => w.WorkId == id);
+        var work = await _context.Works
+               .AsNoTracking()
+               .FirstOrDefaultAsync(w => w.WorkId == id);
+
         if (work == null)
         {
             return BadRequest("obra nao encontrada");
@@ -159,9 +152,7 @@ public class ArtistController : Controller
         }
         try
         {
-            _context.Works.Remove(work);
-            await _context.SaveChangesAsync();
-
+            await _WorkRepository.DeleteAsync(work);
 
             return Ok("Work apagado!");
         }

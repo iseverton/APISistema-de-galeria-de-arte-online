@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
@@ -22,9 +23,9 @@ public class AdminController : Controller
         _tokenService = tokenService;
     }
 
-    [HttpPost("criar")]
+    [HttpPost("create")]
     [Authorize(Roles = "admin")]
-    public async Task<IActionResult> RegisterAdminAndModerator(RegisterViewModel model)
+    public async Task<IActionResult> RegisterAdminOrModerator(RegisterViewModel model)
     {
         var email = await _context.Users.FirstOrDefaultAsync(x => x.UserEmail == model.Email);
 
@@ -61,5 +62,4 @@ public class AdminController : Controller
         }
 
     }
-
 }
