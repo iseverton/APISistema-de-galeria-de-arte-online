@@ -51,7 +51,7 @@ public class CategoryController : Controller
         }
     }
     
-    [HttpPost("create")]
+    [HttpPost]
     [Authorize(Roles = "admin,moderator")]
     public async Task<IActionResult> CreateCategory(CategoryViewModel model)
     {

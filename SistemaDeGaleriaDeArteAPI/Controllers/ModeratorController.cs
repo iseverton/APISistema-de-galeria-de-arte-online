@@ -26,7 +26,7 @@ public class ModeratorController : Controller
     }
 
     // Deletar obra
-    [HttpDelete("deletar/work/{id:int}")]
+    [HttpDelete("work/{id:int}")]
     [Authorize(Roles = "admin,moderator")]
     public async Task<IActionResult> DeleteWork(int id)
     {
@@ -50,7 +50,7 @@ public class ModeratorController : Controller
     }
 
     // Deletar user
-    [HttpDelete("deletar/user/{id:int}")]
+    [HttpDelete("user/{id:int}")]
     [Authorize(Roles = "admin,moderator")]
     public async Task<IActionResult> DeleteUser(int id)
     {

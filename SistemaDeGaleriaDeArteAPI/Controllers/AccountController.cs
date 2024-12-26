@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using MySqlConnector;
 using SistemaDeGaleriaDeArteAPI.Data;
 using SistemaDeGaleriaDeArteAPI.Models;
@@ -24,23 +25,32 @@ public class AccountController : Controller
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterViewModel model) 
     {
+        // Se a pessoa que esta cadastrando for um artista deve fornecer o seu telefone
+        if (model.Role.ToString().ToLower() == "artist" & string.IsNullOrEmpty(model.Phone))
+        {
+            return BadRequest("Os artistas devem fornecer o seu telefone para os usuarios entrar em contato!");
+        }
+
+        if (!string.IsNullOrWhiteSpace(model.Phone))
+        {
+            var phone = await _context.Users.FirstOrDefaultAsync(p => p.PhoneNumber == model.Phone);
+            if (phone != null)
+            {
+                return BadRequest($"Esse telefone já está sendo usado! {phone}");
+            }
+        }
 
 
         // Verificar se email ou telefone ja existem
         var email = await _context.Users.FirstOrDefaultAsync(x => x.UserEmail == model.Email);
-        var phone = await _context.Users.FirstOrDefaultAsync(p=> p.PhoneNumber == model.Phone);
 
         if (email != null) {
             return BadRequest("Esse email ja existe,faca o login!");
         }
 
-        if(phone != null)
-        {
-            return BadRequest("esse telefone ja esta sendo usado!");
-        }
-
+        
         // Restrigir acesso aos roles para usuario comum
-        if (model.Role.ToString().ToLower() != "user" && model.Role.ToString().ToLower() != "artista")
+        if (model.Role.ToString().ToLower() != "user" && model.Role.ToString().ToLower() != "artist")
         {
             return BadRequest("O (role) deve ser 'user' ou 'artista'.");
         }
@@ -68,7 +78,7 @@ public class AccountController : Controller
         }
         catch(Exception ex) 
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return BadRequest($"Falha interna! {ex.Message} e {ex.InnerException}");
         }
     }
 

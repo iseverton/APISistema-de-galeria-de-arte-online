@@ -19,14 +19,15 @@ public class UserModel
 
     public UserModel(
          string userName, string userEmail, string password,
-        string? bio,string phoneNumber,RolesEnum role)
+        string? bio,string? phoneNumber,RolesEnum role)
     {
         UserName = userName;
         UserEmail = userEmail;
         Password = password;
         Bio = bio;
         CreatedAt = DateTime.UtcNow;
-        PhoneNumber = phoneNumber;
         Role = role;
+
+        PhoneNumber = string.IsNullOrWhiteSpace(phoneNumber) ? null : phoneNumber;
     }
 }
