@@ -10,8 +10,12 @@ O sistema será uma **plataforma de divulgação** para artistas, onde eles pode
     - E-mail
     - Nome
     - Senha
-    - Telefone (opcional)
+    - Telefone (opcional apenas para User)
     - Papel (user ou artista)
+
+- **Login**
+    - E-mail
+    - Senha
 
 - **Acesso baseado em roles:**
     - Com base nos papéis atribuídos ao usuário autenticado, uma série de funcionalidades estarão liberadas ou ocultas.
@@ -24,18 +28,19 @@ O sistema será uma **plataforma de divulgação** para artistas, onde eles pode
 ### **Autorizações**
 
 - **Funcionalidades progressivas:**
-    - Se uma ação pode ser realizada por um **artista**, ela também pode ser realizada por **moderador** e **admin**.
+    - Se uma ação pode ser realizada por um **user**, ela também pode ser realizada por **artista**, **moderador** e **admin**.
 
 - As seguintes funcionalidades estarão atreladas aos diferentes papéis:
 
     - **Usuário comum (user):**
-        - Apenas visualizar as obras de arte.
+        - Buscar artistas,obras e categorias.
 
     - **Artista:**
         - Cadastrar e gerenciar suas obras de arte.
 
     - **Moderador:**
         - Gerenciar usuários e artistas.
+        - Cadastrar e geremcoar categorias
 
     - **Admin:**
         - Cadastrar moderadores.
