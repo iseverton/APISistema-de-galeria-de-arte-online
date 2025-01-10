@@ -28,7 +28,7 @@ public class WorkController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<WorkModel>>> GetWorkAll() {
+    public async Task<IActionResult> GetWorkAll() {
         try
         {
             var works = await _WorkRepository.GetAsync();
@@ -36,11 +36,15 @@ public class WorkController : Controller
             {
                 NotFound("nenhuma obra foi encontrada");
             }
-            return Ok(works);
+            return Ok(new ResultViewModels<List<WorkModel>>(works));
+        }
+        catch (MySqlException bd) 
+        { 
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return StatusCode(500,new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
     }
 
@@ -54,17 +58,21 @@ public class WorkController : Controller
             {
                 NotFound("nenhuma obra foi encontrada");
             }
-            return Ok(work);
+            return Ok(new ResultViewModels<WorkModel>(work));
+        }
+        catch (MySqlException bd)
+        {
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
     }
 
     [HttpPost]
     [Authorize(Roles = "admin,moderator,artist")]
-    public async Task<IActionResult> createWork(WorkViewModel model) 
+    public async Task<IActionResult> CreateWork(WorkViewModel model) 
     { 
         if(model is null)
         {
@@ -74,15 +82,15 @@ public class WorkController : Controller
         try
         {
            var work = await _WorkRepository.PostAsync(model);
-            return CreatedAtAction(nameof(GetWorkById), new { id = work.WorkId }, work);
+            return CreatedAtAction(nameof(GetWorkById), new { id = work.WorkId },new ResultViewModels<WorkModel>(work));
         }
-        catch (MySqlException Bd)
+        catch (MySqlException bd)
         {
-            return BadRequest($"Falao ao salvar no banco! {Bd.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
     }
 
@@ -99,7 +107,7 @@ public class WorkController : Controller
         var work = await _context.Works.FirstOrDefaultAsync(w => w.WorkId == id);
         if(work == null)
         {
-            return BadRequest("obra nao encontrada");
+            return BadRequest("obra nao encontrada!");
         }
         
         if (work.ArtistUserID != userIdClaim) 
@@ -118,15 +126,15 @@ public class WorkController : Controller
             work.LastUpdateDate = DateTime.UtcNow;
 
             await _WorkRepository.PutAsync(work);
-            return Ok(work);
+            return Ok(new ResultViewModels<WorkModel>(work));
         }
-        catch (MySqlException Bd)
+        catch (MySqlException bd)
         {
-            return BadRequest($"Falao ao salvar no banco! {Bd.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
     }
 
@@ -154,15 +162,15 @@ public class WorkController : Controller
         {
             await _WorkRepository.DeleteAsync(work);
 
-            return Ok("Work apagado!");
+            return Ok(new ResultViewModels<string>("Work apagado!"));
         }
-        catch (MySqlException Bd)
+        catch (MySqlException bd)
         {
-            return BadRequest($"Falao ao salvar no banco! {Bd.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
     }
 

@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 using SistemaDeGaleriaDeArteAPI.Data;
 using SistemaDeGaleriaDeArteAPI.Interfaces;
 using SistemaDeGaleriaDeArteAPI.Models;
 using SistemaDeGaleriaDeArteAPI.Repositories;
 using SistemaDeGaleriaDeArteAPI.Services;
+using SistemaDeGaleriaDeArteAPI.ViewModels;
 
 namespace SistemaDeGaleriaDeArteAPI.Controllers;
 
@@ -34,11 +36,15 @@ public class UserController : Controller
             {
                 NotFound("nenhum artista foi encontrada");
             }
-            return Ok(artists);
+            return Ok(new ResultViewModels<List<UserModel>>(artists));
+        }
+        catch (MySqlException bd)
+        {
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
     }
 
@@ -54,11 +60,15 @@ public class UserController : Controller
             {
                 NotFound("nenhum artista foi encontrada");
             }
-            return Ok(artist);
+            return Ok(new ResultViewModels<UserModel>(artist));
+        }
+        catch (MySqlException bd)
+        {
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
     }
 
@@ -72,11 +82,15 @@ public class UserController : Controller
             {
                 NotFound("nenhuma obra foi encontrada");
             }
-            return Ok(works);
+            return Ok(new ResultViewModels<List<WorkModel>>(works));
+        }
+        catch (MySqlException bd)
+        {
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
     }
 
@@ -90,12 +104,15 @@ public class UserController : Controller
             {
                 NotFound("nenhuma obra foi encontrada");
             }
-            return Ok(work);
+            return Ok(new ResultViewModels<WorkModel>(work));
+        }
+        catch (MySqlException bd)
+        {
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
-
+            return StatusCode(500, new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
     }
 
@@ -105,11 +122,15 @@ public class UserController : Controller
         try
         {
             var categories = await _userRepository.GetCategoriesAsync();
-            return Ok(categories);
+            return Ok(new ResultViewModels<List<CategoryModel>>(categories));
+        }
+        catch (MySqlException bd)
+        {
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
     }
 
@@ -119,11 +140,15 @@ public class UserController : Controller
         try
         {
             var category = await _userRepository.GetCategoryByIdAsync(id);
-            return Ok(category);
+            return Ok(new ResultViewModels<CategoryModel>(category));
+        }
+        catch (MySqlException bd)
+        {
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
     }
 }

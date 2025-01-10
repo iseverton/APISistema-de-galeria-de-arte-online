@@ -63,13 +63,13 @@ public class ModeratorController : Controller
             }
             return Ok("user excluido!");
         }
-        catch (MySqlException Bd)
+        catch (MySqlException bd)
         {
-            return BadRequest($"Falao ao salvar no banco! {Bd.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
     }
 }

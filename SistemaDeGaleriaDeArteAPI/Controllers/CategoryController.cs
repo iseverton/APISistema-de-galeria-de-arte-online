@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 using SistemaDeGaleriaDeArteAPI.Data;
 using SistemaDeGaleriaDeArteAPI.Interfaces;
+using SistemaDeGaleriaDeArteAPI.Models;
 using SistemaDeGaleriaDeArteAPI.Repositories;
 using SistemaDeGaleriaDeArteAPI.Services;
 using SistemaDeGaleriaDeArteAPI.ViewModels;
@@ -29,11 +30,18 @@ public class CategoryController : Controller
         try
         {
           var categories =  await _categoryRepository.GetAsync();
-            return Ok(categories);
+            if (categories == null) {
+                return NotFound("nehuma categoria foi encontrada!");
+            }
+            return Ok(new ResultViewModels<List<CategoryModel>>(categories));
+        }
+        catch (MySqlException bd)
+        {
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
     }
 
@@ -43,11 +51,15 @@ public class CategoryController : Controller
         try
         {
             var category = await _categoryRepository.GetByIdAsync(id);
-            return Ok(category);
+            return Ok(new ResultViewModels<CategoryModel>(category));
+        }
+        catch (MySqlException bd)
+        {
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
     }
     
@@ -63,15 +75,18 @@ public class CategoryController : Controller
         try
         {
             var category = await _categoryRepository.PostAsync(model);
-            return Ok(model);
+            if (category == null) {
+                return BadRequest("categoria nao pode ser vazia");
+            }
+            return Ok(new ResultViewModels<CategoryModel>(category));
         }
-        catch (MySqlException Bd)
+        catch (MySqlException bd)
         {
-            return BadRequest($"Falao ao salvar no banco! {Bd.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
 
 
@@ -92,15 +107,15 @@ public class CategoryController : Controller
             category.CategoryName = model.CategoryName;
             category.Description = model.Description;
             await _categoryRepository.PutAsync(category);
-            return Ok(category);
+            return Ok(new ResultViewModels<CategoryModel>(category));
         }
-        catch (MySqlException Bd)
+        catch (MySqlException bd)
         {
-            return BadRequest($"Falao ao salvar no banco! {Bd.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
     }
 
@@ -116,15 +131,15 @@ public class CategoryController : Controller
         try
         {
             await _categoryRepository.DeleteAsync(category);
-            return Ok("categoria deletada!");
+            return Ok(new ResultViewModels<String>("categoria deletada!"));
         }
-        catch (MySqlException Bd)
+        catch (MySqlException bd)
         {
-            return BadRequest($"Falao ao salvar no banco! {Bd.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro ao acessar o banco de dados: {bd.Message}"));
         }
         catch (Exception ex)
         {
-            return BadRequest($"Falha interna! {ex.Message}");
+            return StatusCode(500, new ResultViewModels<string>($"Erro interno no servidor: {ex.Message}"));
         }
     }
 }
