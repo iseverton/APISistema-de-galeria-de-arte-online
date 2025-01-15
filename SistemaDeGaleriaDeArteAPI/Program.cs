@@ -11,7 +11,16 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var key = Encoding.ASCII.GetBytes(Configuration.JwtKey);
+// ler configuracoes de appsettings.json
+IConfiguration configuration = builder.Configuration;
+
+// configuracao do token jwt
+
+builder.Services.Configure<JwtSettings>(configuration.GetSection("Jwt")); // mapear a class com appSettigs
+
+var jwtSettings = configuration.GetSection("Jwt").Get<JwtSettings>();
+
+var key = Encoding.ASCII.GetBytes(jwtSettings.JwtKey);
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -27,12 +36,15 @@ builder.Services.AddAuthentication(x =>
     };
 
 });
+
+
 // Add services to the container.
 builder.Services.AddScoped<IWorkRepository,WorkRepository>();
 builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
 builder.Services.AddScoped<IUserRepository,UserRepository>();
-builder.Services.AddScoped<IModeratorRepository,ModeratorRepository>();
-builder.Services.AddTransient<TokenService>();
+builder.Services.AddScoped<IModeratorRepository, ModeratorRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 
 
 builder.Services.AddControllers();

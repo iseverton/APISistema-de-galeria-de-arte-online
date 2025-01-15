@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 using SistemaDeGaleriaDeArteAPI.Data;
+using SistemaDeGaleriaDeArteAPI.Interfaces;
 using SistemaDeGaleriaDeArteAPI.Models;
 using SistemaDeGaleriaDeArteAPI.Services;
 using SistemaDeGaleriaDeArteAPI.ViewModels;
@@ -15,9 +16,9 @@ namespace SistemaDeGaleriaDeArteAPI.Controllers;
 public class AdminController : Controller
 {
     private readonly AppDbContext _context;
-    private readonly TokenService _tokenService;
+    private readonly ITokenService _tokenService;
 
-    public AdminController(AppDbContext context, TokenService tokenService)
+    public AdminController(AppDbContext context, ITokenService tokenService)
     {
         _context = context;
         _tokenService = tokenService;

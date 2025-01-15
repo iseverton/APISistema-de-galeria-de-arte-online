@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using MySqlConnector;
 using SistemaDeGaleriaDeArteAPI.Data;
+using SistemaDeGaleriaDeArteAPI.Interfaces;
 using SistemaDeGaleriaDeArteAPI.Models;
 using SistemaDeGaleriaDeArteAPI.Services;
 using SistemaDeGaleriaDeArteAPI.ViewModels;
@@ -14,10 +15,10 @@ namespace SistemaDeGaleriaDeArteAPI.Controllers;
 public class AccountController : Controller
 {
     private readonly AppDbContext _context;
-    private readonly TokenService _tokenService;
+    private readonly ITokenService _tokenService;
     private readonly ILogger<AccountController> _logger;
 
-    public AccountController(AppDbContext context, TokenService tokenService, ILogger<AccountController> logger)
+    public AccountController(AppDbContext context, ITokenService tokenService, ILogger<AccountController> logger)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));

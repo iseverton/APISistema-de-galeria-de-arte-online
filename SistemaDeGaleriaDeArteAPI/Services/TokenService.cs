@@ -5,16 +5,25 @@ using SistemaDeGaleriaDeArteAPI.Configuration;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using SistemaDeGaleriaDeArteAPI.Interfaces;
+using Microsoft.Extensions.Options;
 
-namespace SistemaDeGaleriaDeArteAPI.Services
+namespace SistemaDeGaleriaDeArteAPI.Services;
+
+public class TokenService : ITokenService
 {
-    public  class TokenService
+    private readonly JwtSettings _jwtSettings;
+
+    public TokenService(IOptions<JwtSettings> JwtSettings )
     {
-        public string GerarToken(UserModel user) 
-        {
+        _jwtSettings = JwtSettings.Value;
+    }
+
+    public string GerarToken(UserModel user)
+    {
             var TokenHandler = new JwtSecurityTokenHandler();
 
-            var key = Encoding.ASCII.GetBytes(Configuration.Configuration.JwtKey);
+            var key = Encoding.ASCII.GetBytes(_jwtSettings.JwtKey);
 
             var TokenDescriptor = new SecurityTokenDescriptor
             {
@@ -22,9 +31,9 @@ namespace SistemaDeGaleriaDeArteAPI.Services
                 // criar os conteudos do token ( playLod ) 
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier,user.UserID.ToString()),
-                    new Claim(ClaimTypes.Name,user.UserName),
-                    new Claim(ClaimTypes.Role,user.Role.ToString()),
+                new Claim(ClaimTypes.NameIdentifier,user.UserID.ToString()),
+                new Claim(ClaimTypes.Name,user.UserName),
+                new Claim(ClaimTypes.Role,user.Role.ToString()),
                 }),
 
                 // Definir tempo de duracao do token
@@ -37,6 +46,6 @@ namespace SistemaDeGaleriaDeArteAPI.Services
 
             var token = TokenHandler.CreateToken(TokenDescriptor);
             return TokenHandler.WriteToken(token);
-        }
+        
     }
 }
